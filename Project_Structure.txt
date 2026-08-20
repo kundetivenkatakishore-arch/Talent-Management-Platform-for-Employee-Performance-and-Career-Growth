@@ -1,0 +1,37 @@
+Talent_Sphere/
+├── .env                         # Environment variables (secrets)
+├── .env.example                 # Template for .env
+├── .gitignore
+├── README.md
+├── requirements.txt
+├── app.py                       # Main Streamlit entry point
+│
+├── .streamlit/
+│   └── config.toml              # Streamlit config/theme
+│
+├── assets/
+│   └── styles.css               # Custom CSS
+│
+├── documents/                   # Source docs (for ingestion)
+│   └── .gitkeep
+│
+├── pages/                       # Streamlit multi-page app
+│   ├── 1_📥_Ingest.py           # Document ingestion page
+│   └── 2_🔍_Search.py           # Search page
+│
+├── src/                         # Core application logic
+│   ├── __init__.py
+│   ├── config.py                # Configuration
+│   ├── embeddings.py            # Embedding generation
+│   ├── ingest.py                # Ingestion pipeline
+│   ├── ui.py                    # UI helpers
+│   └── vectorstore.py           # Vector store interface
+│
+├── chroma_db/                   # ChromaDB persistent vector store (generated)
+│   ├── chroma.sqlite3
+│   └── c3857a1e-.../            # Collection data (binary index files)
+│
+└── talent_sphere/               # ⚠️ Python virtual environment (should be gitignored)
+    ├── Include/
+    ├── Lib/site-packages/       # Installed dependencies
+    └── etc/

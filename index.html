@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: transparent;
+    font-family: 'Inter', -apple-system, system-ui, sans-serif; }
+  .stage {
+    position: relative; border-radius: 22px; padding: 26px 18px 22px;
+    background:
+      radial-gradient(120% 90% at 50% 0%, rgba(55,143,233,.20) 0%, transparent 55%),
+      linear-gradient(160deg, #0b1a2f 0%, #0a1424 55%, #0b1220 100%);
+    border: 1px solid rgba(120,160,220,.18);
+    box-shadow: 0 24px 60px -30px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.04);
+    text-align: center; overflow: hidden;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px; margin: 0 auto 6px;
+    padding: 5px 14px; border-radius: 999px; font-size: .78rem; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase;
+    background: rgba(255,255,255,.06); color: #9fb6d6; border: 1px solid rgba(255,255,255,.08);
+    transition: all .3s;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7f9e; transition: background .3s; }
+  .state-listening .pill { color: #FDB022; border-color: rgba(253,176,34,.35); }
+  .state-listening .dot { background: #FDB022; box-shadow: 0 0 10px #FDB022; }
+  .state-speaking  .pill { color: #34D399; border-color: rgba(52,211,153,.35); }
+  .state-speaking  .dot { background: #34D399; box-shadow: 0 0 10px #34D399; }
+  .state-thinking  .pill { color: #A78BFA; border-color: rgba(167,139,250,.35); }
+  .state-thinking  .dot { background: #A78BFA; box-shadow: 0 0 10px #A78BFA; }
+
+  .orb-wrap { position: relative; width: 176px; height: 176px; margin: 12px auto 6px; cursor: pointer; }
+  .orb {
+    position: absolute; inset: 26px; border-radius: 50%;
+    background: radial-gradient(circle at 34% 28%, #5AA9FF 0%, #2E7BE0 45%, #0A4FB0 100%);
+    box-shadow: 0 18px 50px -8px rgba(46,123,224,.7), inset 0 -10px 30px rgba(0,0,0,.35),
+                inset 0 8px 22px rgba(255,255,255,.25);
+    transition: background .35s ease;
+  }
+  .ring { position: absolute; inset: 6px; border-radius: 50%; border: 2px solid rgba(90,169,255,.35); }
+  .ring2 { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(90,169,255,.18); }
+  .state-idle .orb { animation: breathe 3.4s ease-in-out infinite; }
+  .state-listening .orb { background: radial-gradient(circle at 34% 28%, #FFD27A, #F79009 45%, #B54708 100%);
+    animation: pulse 1.05s ease-in-out infinite; }
+  .state-listening .ring { animation: ripple 1.5s ease-out infinite; }
+  .state-listening .ring2 { animation: ripple 1.5s ease-out .4s infinite; }
+  .state-speaking .orb { background: radial-gradient(circle at 34% 28%, #6EE7B7, #10B981 45%, #047857 100%);
+    animation: breathe 2.2s ease-in-out infinite; }
+  .state-thinking .orb { background: radial-gradient(circle at 34% 28%, #C4B5FD, #8B5CF6 45%, #6D28D9 100%);
+    animation: breathe 1.3s ease-in-out infinite; }
+  @keyframes breathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+  @keyframes pulse { 0%,100%{transform:scale(1);filter:brightness(1)} 50%{transform:scale(1.13);filter:brightness(1.18)} }
+  @keyframes ripple { 0%{transform:scale(.9);opacity:.7} 100%{transform:scale(1.55);opacity:0} }
+
+  .caption { font-weight: 800; font-size: 1.05rem; margin-top: 6px; color: #eaf1fb; letter-spacing: .01em; }
+  .hint { font-size: .82rem; color: #93a6c4; margin-top: 3px; min-height: 1.1em; }
+  .live { max-width: 660px; margin: 12px auto 0; min-height: 1.2em; font-size: 1rem;
+    color: #8fa6c8; font-style: italic; }
+  .words { max-width: 680px; margin: 8px auto 0; line-height: 1.75; font-size: 1.04rem; color: #dce7f6; }
+  .words .w { padding: 1px 3px; border-radius: 5px; transition: background .1s, color .1s; }
+  .words .w.hl { background: #FFE84D; color: #0b1220; box-shadow: 0 0 0 2px #FFE84D; }
+  .err { color: #FDA29B; font-size: .85rem; margin-top: 10px; min-height: 1em; }
+  .start-overlay { position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; cursor: pointer;
+    background: rgba(8,14,26,.55); backdrop-filter: blur(1px); border-radius: 22px; z-index: 5; }
+  .start-overlay .cta { padding: 12px 26px; border-radius: 999px; font-weight: 800; font-size: 1rem;
+    color: #fff; background: linear-gradient(135deg, #378FE9, #0A66C2);
+    box-shadow: 0 12px 30px -8px rgba(10,102,194,.8); animation: bob 2s ease-in-out infinite; }
+  .start-overlay .sub { color: #b9c9e4; margin-top: 12px; font-size: .85rem; }
+  @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="stage" class="stage state-idle">
+  <div class="pill"><span class="dot"></span><span id="pill-label">Ready</span></div>
+  <div class="orb-wrap" id="orb"><div class="ring2"></div><div class="ring"></div><div class="orb"></div></div>
+  <div class="caption" id="caption">Voice assistant</div>
+  <div class="hint" id="hint"></div>
+  <div class="live" id="live"></div>
+  <div class="words" id="words"></div>
+  <div class="err" id="err"></div>
+
+  <div class="start-overlay" id="startOverlay">
+    <div class="cta" id="startBtn">🎤 Tap to start talking</div>
+    <div class="sub">Allow microphone access when prompted</div>
+  </div>
+</div>
+
+<script>
+/* ---------------- Streamlit component protocol (buildless) ---------------- */
+const Streamlit = {
+  send(o){ window.parent.postMessage(Object.assign({isStreamlitMessage:true}, o), "*"); },
+  ready(){ this.send({type:"streamlit:componentReady", apiVersion:1}); },
+  height(h){ this.send({type:"streamlit:setFrameHeight", height: h || document.body.scrollHeight}); },
+  value(v){ this.send({type:"streamlit:setComponentValue", value:v, dataType:"json"}); },
+};
+
+/* ---------------- i18n ---------------- */
+const I18N = {
+  en: {ready:"Ready", listening:"Listening…", speaking:"Speaking…", thinking:"Thinking…",
+       hint_listen:"Speak now — pause 3 seconds when done", hint_idle:"Tap the circle to talk"},
+  hi: {ready:"तैयार", listening:"सुन रहा हूँ…", speaking:"बोल रहा हूँ…", thinking:"सोच रहा हूँ…",
+       hint_listen:"अब बोलिए — पूरा होने पर 3 सेकंड रुकें", hint_idle:"बात करने के लिए वृत्त पर टैप करें"},
+  te: {ready:"సిద్ధం", listening:"వింటున్నాను…", speaking:"మాట్లాడుతున్నాను…", thinking:"ఆలోచిస్తున్నాను…",
+       hint_listen:"ఇప్పుడు మాట్లాడండి — పూర్తయ్యాక 3 సెకన్లు ఆగండి", hint_idle:"మాట్లాడటానికి సర్కిల్‌ను నొక్కండి"},
+  ta: {ready:"தயார்", listening:"கேட்கிறேன்…", speaking:"பேசுகிறேன்…", thinking:"யோசிக்கிறேன்…",
+       hint_listen:"இப்போது பேசுங்கள் — முடிந்ததும் 3 வினாடி நிறுத்துங்கள்", hint_idle:"பேச வட்டத்தை தட்டவும்"},
+};
+function T(k){ return (I18N[(lang||"en").slice(0,2)] || I18N.en)[k]; }
+
+/* ---------------- state ---------------- */
+const stage = document.getElementById("stage");
+const pillLabel = document.getElementById("pill-label");
+const captionEl = document.getElementById("caption");
+const hintEl = document.getElementById("hint");
+const liveEl = document.getElementById("live");
+const wordsEl = document.getElementById("words");
+const errEl = document.getElementById("err");
+const startOverlay = document.getElementById("startOverlay");
+
+const SILENCE_MS = 3000;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let lang = "en-US";
+let recog = null;
+let speaking = false;
+let wantListen = false;
+let sessionActive = false;
+let finalBuf = "";
+let silenceTimer = null;
+let nonce = 0;
+let lastSpokenId = "";
+let lastText = "";
+let tokens = [];
+let pending = { text:"", id:"", listen:true, active:true };
+
+function setState(s, captionKey){
+  stage.className = "stage state-" + s;
+  pillLabel.textContent = T(captionKey || (s==="idle"?"ready":s));
+  if (s === "listening") hintEl.textContent = T("hint_listen");
+  else if (s === "idle") hintEl.textContent = sessionActive ? T("hint_idle") : "";
+  else hintEl.textContent = "";
+  Streamlit.height();
+}
+
+function renderWords(text){
+  if (text === lastText) return;
+  lastText = text; tokens = []; wordsEl.innerHTML = "";
+  let re = /\S+/g, m, last = 0;
+  while ((m = re.exec(text)) !== null){
+    if (m.index > last) wordsEl.appendChild(document.createTextNode(text.slice(last, m.index)));
+    const sp = document.createElement("span"); sp.className = "w"; sp.textContent = m[0];
+    wordsEl.appendChild(sp); tokens.push({start:m.index, end:m.index+m[0].length, el:sp});
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) wordsEl.appendChild(document.createTextNode(text.slice(last)));
+}
+
+/* ---------------- text to speech ---------------- */
+let VOICES = [];
+function loadVoices(){ try { VOICES = window.speechSynthesis.getVoices() || []; } catch(e){ VOICES = []; } }
+
+function pickVoice(code){
+  if (!VOICES.length) loadVoices();
+  const full = (code||"en-US").toLowerCase();
+  const base = full.slice(0,2);
+  // Match the exact locale, else the same base language. NEVER fall back to an
+  // English voice for a non-English language — an English voice can't render
+  // Hindi/Telugu/Tamil text and just stays silent. Leaving voice unset lets the
+  // browser pick its own (often online) voice for u.lang.
+  const match = VOICES.find(v => (v.lang||"").toLowerCase().replace("_","-") === full)
+             || VOICES.find(v => (v.lang||"").toLowerCase().replace("_","-").startsWith(base));
+  if (match) return match;
+  if (base === "en") return VOICES.find(v => (v.lang||"").toLowerCase().startsWith("en")) || null;
+  return null;
+}
+
+function speak(text, id){
+  renderWords(text);
+  if (!text || !("speechSynthesis" in window)){ afterSpeak(); return; }
+  lastSpokenId = id || "";
+  speaking = true;
+  pauseRecognition();
+  setState("speaking");
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang; u.rate = 1.0; u.pitch = 1.0;
+  const v = pickVoice(lang); if (v) u.voice = v;
+  u.onboundary = (e) => {
+    if (e.charIndex == null) return;
+    let idx = tokens.findIndex(t => e.charIndex >= t.start && e.charIndex < t.end);
+    if (idx < 0) idx = tokens.findIndex(t => t.start >= e.charIndex);
+    tokens.forEach((t,i) => t.el.classList.toggle("hl", i === idx));
+  };
+  u.onend = () => { tokens.forEach(t => t.el.classList.remove("hl")); afterSpeak(); };
+  u.onerror = () => afterSpeak();
+  try { window.speechSynthesis.cancel(); } catch(e){}
+  window.speechSynthesis.speak(u);
+}
+
+function afterSpeak(){
+  speaking = false;
+  if (wantListen) startListening();
+  else setState("idle");
+}
+
+/* ---------------- speech recognition ---------------- */
+function buildRecognizer(){
+  if (!SR){ errEl.textContent = "This browser has no speech recognition. Use Chrome, Edge or Safari."; return null; }
+  const r = new SR();
+  r.lang = lang; r.continuous = true; r.interimResults = true; r.maxAlternatives = 1;
+  r.onresult = (event) => {
+    let interim = "";
+    for (let i = event.resultIndex; i < event.results.length; i++){
+      const res = event.results[i];
+      if (res.isFinal) finalBuf += res[0].transcript + " ";
+      else interim += res[0].transcript;
+    }
+    liveEl.textContent = (finalBuf + interim).trim();
+    if (silenceTimer) clearTimeout(silenceTimer);
+    silenceTimer = setTimeout(endpoint, SILENCE_MS);
+  };
+  r.onerror = (e) => {
+    if (e.error === "no-speech" || e.error === "aborted") return;
+    if (e.error === "not-allowed" || e.error === "service-not-allowed")
+      errEl.textContent = "Microphone blocked. Allow mic access and tap start again.";
+  };
+  r.onend = () => { if (wantListen && !speaking){ try { r.start(); } catch(e){} } };
+  return r;
+}
+
+function startListening(){
+  if (!SR){ errEl.textContent = "This browser has no speech recognition. Use Chrome, Edge or Safari."; return; }
+  wantListen = true; finalBuf = ""; liveEl.textContent = "";
+  if (!recog) recog = buildRecognizer();
+  if (recog){ recog.lang = lang; try { recog.start(); } catch(e){} }
+  setState("listening");
+}
+
+function pauseRecognition(){                       // stop the mic but keep wanting to listen
+  if (silenceTimer){ clearTimeout(silenceTimer); silenceTimer = null; }
+  if (recog){ try { recog.stop(); } catch(e){} }
+}
+
+function stopAll(){
+  wantListen = false; speaking = false;
+  if (silenceTimer){ clearTimeout(silenceTimer); silenceTimer = null; }
+  if (recog){ try { recog.stop(); } catch(e){} }
+  try { window.speechSynthesis.cancel(); } catch(e){}
+}
+
+function endpoint(){
+  const text = (finalBuf.trim() || liveEl.textContent.trim());
+  if (silenceTimer){ clearTimeout(silenceTimer); silenceTimer = null; }
+  if (!text) return;
+  finalBuf = ""; wantListen = false;
+  if (recog){ try { recog.stop(); } catch(e){} }
+  setState("thinking");
+  nonce += 1;
+  Streamlit.value({ kind:"transcript", text:text, lang:lang, nonce:nonce });
+}
+
+/* ---------------- turn control ---------------- */
+function applyTurn(){
+  if (!sessionActive) return;
+  if (pending.text && pending.id && pending.id !== lastSpokenId){
+    wantListen = pending.listen;
+    speak(pending.text, pending.id);
+  } else if (pending.listen && !speaking && !wantListen){
+    startListening();
+  }
+}
+
+function onStart(){
+  errEl.textContent = "";
+  startOverlay.classList.add("hidden");
+  if (!sessionActive){
+    sessionActive = true;
+    // warm up speech synthesis within the user gesture
+    try { window.speechSynthesis.resume(); } catch(e){}
+    applyTurn();
+  } else if (!speaking){
+    startListening();
+  }
+}
+
+document.getElementById("startOverlay").addEventListener("click", onStart);
+document.getElementById("orb").addEventListener("click", () => { if (sessionActive && !speaking) startListening(); });
+
+/* ---------------- render from Python ---------------- */
+function onRender(args){
+  args = args || {};
+  if (args.lang) lang = args.lang;
+  pending = {
+    text: args.speak_text || "",
+    id: args.speak_id || "",
+    listen: args.listen !== false,
+    active: !!args.active,
+  };
+  renderWords(pending.text);
+  if (!pending.active){ stopAll(); setState("idle"); startOverlay.classList.remove("hidden"); return; }
+  if (sessionActive) applyTurn();
+  else setState("idle");
+  Streamlit.height();
+}
+
+window.addEventListener("message", (event) => {
+  const d = event.data;
+  if (d && d.type === "streamlit:render") onRender(d.args || {});
+});
+if ("speechSynthesis" in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;   // voices load asynchronously
+}
+
+Streamlit.ready();
+Streamlit.height(470);
+</script>
+</body>
+</html>

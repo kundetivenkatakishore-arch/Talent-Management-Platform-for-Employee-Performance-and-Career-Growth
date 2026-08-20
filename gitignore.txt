@@ -1,0 +1,11 @@
+.env
+chroma_db/
+talent_sphere.db
+talent_sphere.db-*
+talent_sphere/
+__pycache__/
+*.pyc
+.venv/
+venv/
+documents/*.pdf
+.DS_Store

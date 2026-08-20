@@ -1,0 +1,567 @@
+/* ============================================================
+   Talent Sphere Elevate — LinkedIn-themed enterprise UI
+   Full-platform stylesheet (auth · chat · admin · exams · docs)
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root {
+  /* LinkedIn brand */
+  --ls-primary: #0A66C2;
+  --ls-primary-hover: #004182;
+  --ls-primary-bright: #378FE9;
+  --ls-gradient: linear-gradient(135deg, #378FE9 0%, #0A66C2 55%, #004182 100%);
+  --ls-gradient-hero: linear-gradient(120deg, #004182 0%, #0A66C2 50%, #378FE9 100%);
+
+  /* Surfaces */
+  --ls-bg: #F3F2EF;
+  --ls-surface: #FFFFFF;
+  --ls-border: #E0DFDC;
+
+  /* Text */
+  --ls-text: rgba(0, 0, 0, 0.90);
+  --ls-text-secondary: rgba(0, 0, 0, 0.60);
+
+  /* Semantic */
+  --ls-success: #057642;
+  --ls-warning: #B78103;
+  --ls-danger:  #CC1016;
+
+  /* Effects */
+  --ls-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --ls-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.10);
+  --ls-shadow-hover: 0 6px 18px rgba(10, 102, 194, 0.20);
+  --ls-radius: 12px;
+  --ls-radius-pill: 24px;
+}
+
+/* ---------- Trim Streamlit chrome (enterprise look) ----------
+   Keep the header itself: it holds the sidebar reopen control and the
+   ⋮ settings menu. Hide only branding elements. */
+footer { visibility: hidden; }
+header[data-testid="stHeader"] {
+  background: transparent;
+}
+[data-testid="stDecoration"],
+[data-testid="stAppDeployButton"],
+[data-testid="stStatusWidget"] {
+  display: none !important;
+}
+
+/* Sidebar toggle + main menu: keep visible and on-brand */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarCollapseButton"] {
+  visibility: visible;
+}
+[data-testid="stSidebarCollapsedControl"] button:hover,
+[data-testid="stMainMenu"] button:hover {
+  background: rgba(10, 102, 194, 0.10);
+  border-radius: 8px;
+}
+
+/* ---------- Base typography & layout ---------- */
+html, body, [class*="css"], .stApp {
+  font-family: "Inter", system-ui, "Segoe UI", sans-serif;
+  color: var(--ls-text);
+}
+.stApp { background: var(--ls-bg); }
+
+.block-container {
+  max-width: 1150px;
+  padding-top: 1.5rem;
+  padding-bottom: 6rem;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ls-text);
+}
+
+/* ---------- Sidebar ---------- */
+[data-testid="stSidebar"] {
+  background: var(--ls-surface);
+  border-right: 1px solid var(--ls-border);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+}
+[data-testid="stSidebar"] .block-container { padding-top: 1rem; }
+
+/* Navigation links (st.navigation) */
+[data-testid="stSidebarNav"] a,
+[data-testid="stSidebarNavLink"] {
+  border-radius: 10px !important;
+  margin: 2px 6px;
+  font-weight: 500;
+  transition: all 0.18s ease;
+}
+[data-testid="stSidebarNav"] a:hover {
+  background: rgba(10, 102, 194, 0.08) !important;
+  transform: translateX(2px);
+}
+[data-testid="stSidebarNav"] a[aria-current="page"] {
+  background: rgba(10, 102, 194, 0.12) !important;
+  border-left: 3px solid var(--ls-primary);
+  font-weight: 600;
+}
+[data-testid="stSidebarNav"] a[aria-current="page"] span {
+  color: var(--ls-primary-hover) !important;
+}
+
+/* Sidebar session buttons */
+[data-testid="stSidebar"] .stButton > button {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+/* ---------- Hero header ---------- */
+.ts-hero {
+  background: var(--ls-gradient-hero);
+  color: #fff;
+  border-radius: 16px;
+  padding: 1.8rem 2.3rem;
+  box-shadow: 0 8px 24px rgba(10, 102, 194, 0.28);
+  margin-bottom: 1.5rem;
+}
+.ts-hero-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.ts-hero-subtitle {
+  margin-top: 0.45rem;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* ---------- Section headers ---------- */
+.ts-section {
+  margin: 0.5rem 0 1.1rem 0;
+  padding-left: 0.9rem;
+  border-left: 4px solid var(--ls-primary);
+}
+.ts-section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
+.ts-section-subtitle { margin-top: 0.15rem; font-size: 0.93rem; color: var(--ls-text-secondary); }
+
+/* ---------- Cards ---------- */
+.ts-card {
+  background: var(--ls-surface);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--ls-shadow);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  margin-bottom: 1rem;
+}
+.ts-card:hover { box-shadow: var(--ls-shadow-hover); transform: translateY(-2px); }
+.ts-card-title {
+  font-size: 1.02rem; font-weight: 600; margin-bottom: 0.4rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.ts-card-icon { font-size: 1.15rem; }
+.ts-card-body { font-size: 0.93rem; color: var(--ls-text-secondary); line-height: 1.5; }
+
+/* Native bordered containers get the card treatment too */
+[data-testid="stVerticalBlockBorderWrapper"] > div > [data-testid="stVerticalBlock"] {
+  border-radius: var(--ls-radius);
+}
+[data-testid="stVerticalBlockBorderWrapper"] {
+  background: var(--ls-surface);
+  border-radius: var(--ls-radius);
+  box-shadow: var(--ls-shadow);
+  transition: box-shadow 0.2s ease;
+}
+[data-testid="stVerticalBlockBorderWrapper"]:hover { box-shadow: var(--ls-shadow-md); }
+
+/* ---------- Metric tiles ---------- */
+.ts-metric {
+  background: var(--ls-surface);
+  border: 1px solid var(--ls-border);
+  border-left: 5px solid var(--ls-primary);
+  border-radius: var(--ls-radius);
+  padding: 1.05rem 1.3rem;
+  box-shadow: var(--ls-shadow);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  margin-bottom: 0.75rem;
+}
+.ts-metric:hover { box-shadow: var(--ls-shadow-hover); transform: translateY(-2px); }
+.ts-metric-value {
+  font-size: 1.75rem; font-weight: 700; color: var(--ls-primary); line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.ts-metric-label {
+  margin-top: 0.3rem; font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ls-text-secondary);
+}
+
+/* ---------- Badges & pills ---------- */
+.ts-badge {
+  display: inline-block; padding: 0.15rem 0.7rem;
+  border-radius: var(--ls-radius-pill);
+  font-size: 0.78rem; font-weight: 600; color: #fff;
+}
+.ts-badge-high { background: var(--ls-success); }
+.ts-badge-mid  { background: var(--ls-primary); }
+.ts-badge-low  { background: #6b7280; }
+.ts-badge-warn { background: var(--ls-warning); }
+.ts-badge-danger { background: var(--ls-danger); }
+.ts-badge-outline {
+  background: transparent; color: var(--ls-primary);
+  border: 1px solid var(--ls-primary);
+}
+
+/* ---------- Buttons (gradient pills) ---------- */
+.stButton > button, .stDownloadButton > button, .stFormSubmitButton > button {
+  background: var(--ls-gradient);
+  color: #fff;
+  border: none;
+  border-radius: var(--ls-radius-pill);
+  padding: 0.5rem 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 6px rgba(10, 102, 194, 0.25);
+  transition: all 0.2s ease;
+}
+.stButton > button:hover, .stDownloadButton > button:hover, .stFormSubmitButton > button:hover {
+  background: linear-gradient(135deg, #0A66C2 0%, #004182 100%);
+  box-shadow: var(--ls-shadow-hover);
+  transform: translateY(-1px);
+  color: #fff;
+}
+.stButton > button:active { transform: translateY(0); }
+.stButton > button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.35);
+}
+.stButton > button:disabled {
+  opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none;
+}
+
+/* Secondary buttons: white fill, blue border */
+.stButton > button[kind="secondary"],
+[data-testid="stBaseButton-secondary"] {
+  background: var(--ls-surface);
+  color: var(--ls-primary);
+  border: 1.5px solid var(--ls-primary);
+  box-shadow: none;
+}
+.stButton > button[kind="secondary"]:hover,
+[data-testid="stBaseButton-secondary"]:hover {
+  background: rgba(10, 102, 194, 0.08);
+  color: var(--ls-primary-hover);
+  border-color: var(--ls-primary-hover);
+  box-shadow: 0 3px 10px rgba(10, 102, 194, 0.15);
+}
+
+/* Tertiary buttons: quiet text buttons (session rows, small actions) */
+.stButton > button[kind="tertiary"],
+[data-testid="stBaseButton-tertiary"] {
+  background: transparent;
+  color: var(--ls-text);
+  border: none;
+  box-shadow: none;
+  border-radius: 10px;
+  font-weight: 500;
+}
+.stButton > button[kind="tertiary"]:hover,
+[data-testid="stBaseButton-tertiary"]:hover {
+  background: rgba(10, 102, 194, 0.08);
+  color: var(--ls-primary-hover);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Destructive wrapper */
+.ts-danger .stButton > button[kind="secondary"] {
+  color: var(--ls-danger);
+  border-color: var(--ls-danger);
+}
+.ts-danger .stButton > button[kind="secondary"]:hover {
+  background: rgba(204, 16, 22, 0.08);
+  color: var(--ls-danger);
+  border-color: var(--ls-danger);
+  box-shadow: 0 3px 10px rgba(204, 16, 22, 0.15);
+}
+
+/* ---------- Suggestion pills (st.pills) ---------- */
+[data-testid="stPills"] button {
+  border-radius: var(--ls-radius-pill) !important;
+  border: 1.5px solid var(--ls-border);
+  background: var(--ls-surface);
+  color: var(--ls-text);
+  font-weight: 500;
+  box-shadow: var(--ls-shadow);
+  transition: all 0.18s ease;
+}
+[data-testid="stPills"] button:hover {
+  border-color: var(--ls-primary);
+  color: var(--ls-primary);
+  box-shadow: var(--ls-shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* ---------- Chat ---------- */
+[data-testid="stChatMessage"] {
+  background: var(--ls-surface);
+  border: 1px solid var(--ls-border);
+  border-radius: 16px 16px 16px 4px;
+  box-shadow: var(--ls-shadow);
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.4rem;
+}
+/* User messages: light-blue wash, mirrored radius */
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+  background: linear-gradient(135deg, rgba(55, 143, 233, 0.10) 0%, rgba(10, 102, 194, 0.08) 100%);
+  border: 1px solid rgba(10, 102, 194, 0.18);
+  border-radius: 16px 16px 4px 16px;
+}
+[data-testid="stChatMessageAvatarUser"],
+[data-testid="stChatMessageAvatarAssistant"] {
+  background: var(--ls-gradient) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px rgba(10, 102, 194, 0.3);
+}
+
+/* Chat input — floating pill bar */
+[data-testid="stChatInput"] {
+  border: 1.5px solid var(--ls-border);
+  border-radius: 28px;
+  background: var(--ls-surface);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+[data-testid="stChatInput"]:focus-within {
+  border-color: var(--ls-primary);
+  box-shadow: 0 4px 24px rgba(10, 102, 194, 0.22);
+}
+[data-testid="stChatInput"] textarea { font-size: 0.95rem; }
+[data-testid="stChatInputSubmitButton"] {
+  background: var(--ls-gradient) !important;
+  border-radius: 50% !important;
+  color: #fff !important;
+}
+
+/* ---------- Inputs ---------- */
+.stTextInput input, .stTextArea textarea, .stNumberInput input, .stDateInput input {
+  border-radius: 10px;
+  border: 1px solid var(--ls-border);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.stTextInput input:focus, .stTextArea textarea:focus, .stNumberInput input:focus {
+  border-color: var(--ls-primary);
+  box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.18);
+  outline: none;
+}
+[data-baseweb="select"] > div {
+  border-radius: 10px !important;
+  border-color: var(--ls-border) !important;
+}
+
+/* ---------- File uploader drop-zone ---------- */
+[data-testid="stFileUploader"] {
+  border: 2px dashed var(--ls-primary);
+  border-radius: var(--ls-radius);
+  background: var(--ls-bg);
+  padding: 0.75rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+[data-testid="stFileUploader"]:hover {
+  border-color: var(--ls-primary-hover);
+  background: rgba(10, 102, 194, 0.04);
+}
+[data-testid="stFileUploaderDropzone"] { background: transparent; }
+
+/* ---------- Tabs ---------- */
+.stTabs [data-baseweb="tab-list"] {
+  gap: 6px;
+  border-bottom: 1px solid var(--ls-border);
+}
+.stTabs [data-baseweb="tab"] {
+  border-radius: 10px 10px 0 0;
+  font-weight: 600;
+  color: var(--ls-text-secondary);
+  transition: all 0.18s ease;
+}
+.stTabs [data-baseweb="tab"]:hover {
+  background: rgba(10, 102, 194, 0.06);
+  color: var(--ls-primary);
+}
+.stTabs [aria-selected="true"] { color: var(--ls-primary) !important; }
+.stTabs [data-baseweb="tab-highlight"] { background-color: var(--ls-primary); }
+
+/* ---------- Expanders ---------- */
+[data-testid="stExpander"] {
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  background: var(--ls-surface);
+  box-shadow: var(--ls-shadow);
+  overflow: hidden;
+}
+[data-testid="stExpander"] summary {
+  font-weight: 600;
+  transition: background 0.18s ease;
+}
+[data-testid="stExpander"] summary:hover {
+  background: rgba(10, 102, 194, 0.05);
+  color: var(--ls-primary);
+}
+
+/* ---------- Tables / dataframes ---------- */
+[data-testid="stDataFrame"] {
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  overflow: hidden;
+  box-shadow: var(--ls-shadow);
+}
+[data-testid="stDataFrame"] thead tr th { background: var(--ls-bg); }
+
+/* Markdown tables inside chat answers */
+[data-testid="stChatMessage"] table, .ts-md table {
+  border-collapse: collapse;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--ls-shadow);
+  margin: 0.6rem 0;
+}
+[data-testid="stChatMessage"] table th {
+  background: var(--ls-gradient);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.5rem 0.8rem;
+  text-align: left;
+}
+[data-testid="stChatMessage"] table td {
+  padding: 0.45rem 0.8rem;
+  border-bottom: 1px solid var(--ls-border);
+  background: var(--ls-surface);
+}
+[data-testid="stChatMessage"] table tr:nth-child(even) td { background: #FAFAF8; }
+[data-testid="stChatMessage"] table tr:hover td { background: rgba(10, 102, 194, 0.05); }
+
+/* ---------- Progress bar ---------- */
+.stProgress > div > div > div > div { background: var(--ls-gradient); }
+
+/* ---------- Alerts ---------- */
+[data-testid="stAlert"] {
+  border-radius: var(--ls-radius);
+  box-shadow: var(--ls-shadow);
+}
+
+/* ---------- Popover ---------- */
+[data-testid="stPopoverBody"] {
+  border-radius: var(--ls-radius);
+  box-shadow: var(--ls-shadow-md);
+}
+
+/* ---------- PDF viewer ---------- */
+.ts-pdf-frame {
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius);
+  box-shadow: var(--ls-shadow-md);
+  width: 100%;
+  background: #fff;
+}
+
+/* ---------- Login page ---------- */
+.ts-login-brand {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+.ts-login-logo {
+  width: 64px; height: 64px;
+  border-radius: 18px;
+  background: var(--ls-gradient);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 8px 24px rgba(10, 102, 194, 0.35);
+  margin-bottom: 0.8rem;
+}
+.ts-login-title {
+  font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em;
+  background: var(--ls-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.ts-login-subtitle { color: var(--ls-text-secondary); font-size: 0.93rem; margin-top: 0.2rem; }
+
+/* ---------- Result / search cards ---------- */
+.ts-result-head {
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.ts-result-source { font-weight: 600; color: var(--ls-primary-hover); }
+.ts-result-page {
+  font-size: 0.85rem; color: var(--ls-text-secondary);
+  background: var(--ls-bg);
+  padding: 0.1rem 0.6rem;
+  border-radius: var(--ls-radius-pill);
+}
+.ts-result-text { font-size: 0.94rem; line-height: 1.55; color: var(--ls-text); }
+
+/* ---------- Empty state ---------- */
+.ts-empty { text-align: center; padding: 2.5rem 1.5rem; }
+.ts-empty-icon { font-size: 2.4rem; }
+.ts-empty-title { margin-top: 0.6rem; font-size: 1.15rem; font-weight: 600; }
+.ts-empty-body { margin-top: 0.3rem; color: var(--ls-text-secondary); }
+
+/* ---------- Announcement feed ---------- */
+.ts-news {
+  background: var(--ls-surface);
+  border: 1px solid var(--ls-border);
+  border-left: 5px solid var(--ls-primary-bright);
+  border-radius: var(--ls-radius);
+  padding: 1.1rem 1.4rem;
+  box-shadow: var(--ls-shadow);
+  margin-bottom: 0.9rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.ts-news:hover { box-shadow: var(--ls-shadow-hover); transform: translateY(-2px); }
+.ts-news-head { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.ts-news-title { font-weight: 700; font-size: 1.02rem; }
+.ts-news-meta { font-size: 0.78rem; color: var(--ls-text-secondary); margin-top: 0.25rem; }
+.ts-news-body { margin-top: 0.5rem; font-size: 0.93rem; line-height: 1.55; }
+
+/* ---------- Score ring (exam results) ---------- */
+.ts-ring-wrap { display: flex; align-items: center; gap: 1.2rem; }
+.ts-ring {
+  width: 110px; height: 110px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 1.25rem; color: var(--ls-primary-hover);
+}
+.ts-ring-inner {
+  width: 84px; height: 84px; border-radius: 50%;
+  background: var(--ls-surface);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* ---------- Divider spacing ---------- */
+hr { border-color: var(--ls-border); }
+
+/* ---------- AI Assistant guided builders (chat wizards) ---------- */
+.ts-wizard-head {
+  display: flex; flex-direction: column; gap: 2px;
+  padding-bottom: 0.6rem; margin-bottom: 0.4rem;
+  border-bottom: 1px solid var(--ls-border);
+}
+.ts-wizard-title {
+  font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em;
+  color: var(--ls-text);
+}
+.ts-wizard-step {
+  font-size: 0.82rem; font-weight: 600; color: var(--ls-primary);
+}
+
+/* ---------- Voice assistant (enterprise) ---------- */
+.ts-voice-title {
+  font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800;
+  letter-spacing: -0.01em; color: var(--ls-text); display: flex; align-items: center; gap: 10px;
+}
+.ts-voice-badge {
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase;
+  color: #fff; background: linear-gradient(135deg, #34D399, #059669);
+  padding: 3px 10px; border-radius: 999px; box-shadow: 0 4px 12px -4px rgba(5,150,105,.6);
+}
